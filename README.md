@@ -17,6 +17,8 @@ full spec → plan → research → tasks trail behind this build.
 
 <img width="1512" height="982" alt="image" src="https://github.com/user-attachments/assets/edc1e484-b525-4833-8c58-23a748d20fd1" />
 
+<img width="779" height="209" alt="image" src="https://github.com/user-attachments/assets/31df034a-a49f-4bfd-ae5d-5cecbcd4a57d" />
+
 
 ## Built with Spec-Driven Development (SDD)
 
