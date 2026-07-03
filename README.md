@@ -222,6 +222,15 @@ skills/sre/
 └── runbook/              deterministic vault read/write, human-verified vs AI-guessed knowledge
 ```
 
-Full spec, plan, research, and task breakdown: `specs/001-k8s-sre-assistant/`. Guidance for future
-development on this repo (commands, architecture gotchas worth not re-learning the hard way):
-[`CLAUDE.md`](CLAUDE.md).
+Full spec, plan, research, and task breakdown: `specs/001-k8s-sre-assistant/`. 
+
+## Resources
+
+- [spec-kit](https://github.com/github/spec-kit) — the Spec-Driven Development toolkit used to plan
+  and build this project (see "Built with Spec-Driven Development" above).
+- [Hermes Agent](https://github.com/nousresearch/hermes-agent) — the underlying agent runtime this
+  project configures and extends with skills.
+- [Obsidian](https://obsidian.md) — used only as a local Markdown viewer for `obsidian/runbooks/`.
+  Nothing about this project depends on Obsidian itself or any account/sync feature: the vault is
+  just a plain folder of `.md` files on disk (gitignored, kept local per the constitution's
+  local-first principle) — Obsidian is one convenient way to browse it, not a requirement.
