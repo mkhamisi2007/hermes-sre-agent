@@ -1,0 +1,23 @@
+model:
+  default: ${LLM_MODEL_NAME}
+  provider: custom
+  base_url: ${LLM_BASE_URL}
+
+platforms:
+  telegram:
+    enabled: true
+    token: ${TELEGRAM_BOT_TOKEN}
+
+display:
+  platforms:
+    telegram:
+      # Live-found: streaming sends dozens of incremental message-edit calls per reply, which
+      # exhausted Telegram's per-chat rate limit after just 3 real conversational turns
+      # ("Telegram flood control exceeded") and separately caused "MarkdownV2 parse failed" /
+      # "Message to edit not found" errors from edits landing on stale/expired messages. One
+      # full message per reply is slower to first-byte but reliable.
+      streaming: false
+
+# No `skills.external_dirs` entry needed: /opt/data/skills/sre is mounted directly under the
+# default skills root (/opt/data/skills), so Hermes scans it like any other category directory
+# (see specs/001-k8s-sre-assistant/contracts/skills.md).

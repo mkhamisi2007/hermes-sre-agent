@@ -1,0 +1,48 @@
+# Read-only ServiceAccount + ClusterRole for the Hermes SRE assistant.
+# Enforces Constitution Principle V (Least-Privilege & Auditability): the agent can
+# observe pods/nodes/events cluster-wide but cannot create, update, or delete anything.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: hermes-sre-readonly
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: hermes-sre-readonly
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "nodes", "events", "namespaces", "services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs", "cronjobs"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: hermes-sre-readonly
+subjects:
+  - kind: ServiceAccount
+    name: hermes-sre-readonly
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: hermes-sre-readonly
+  apiGroup: rbac.authorization.k8s.io
+---
+# Long-lived, durable token (not the short-lived `kubectl create token` default) so the
+# kubeconfig doesn't need periodic re-minting. Kubernetes auto-populates the token/ca.crt
+# once the ServiceAccount above exists.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hermes-sre-readonly-token
+  namespace: default
+  annotations:
+    kubernetes.io/service-account.name: hermes-sre-readonly
+type: kubernetes.io/service-account-token

@@ -1,0 +1,41 @@
+services:
+  hermes:
+    build: .
+    image: hermes-sre-agent:local
+    container_name: hermes-sre-agent
+    restart: unless-stopped
+    command: gateway run
+    env_file:
+      - .env
+    environment:
+      # Cron scripts run as user `hermes` (HOME=/opt/data/home), not root — kubectl's default
+      # $HOME/.kube/config lookup misses entirely for that user, and it silently falls back to
+      # the insecure localhost:8080 default (discovered live: every cron-triggered collect.sh
+      # run reported the cluster "unreachable" while manual root-shell testing worked fine).
+      # An explicit KUBECONFIG makes cluster access consistent regardless of which user invokes
+      # kubectl.
+      - KUBECONFIG=/etc/hermes-kubeconfig/config
+    volumes:
+      # Hermes home: persistent memory (MEMORY.md/USER.md), default skills root
+      # (including the Skills Hub's .hub/quarantine and .hub/audit.log), all local.
+      - ./data:/opt/data
+      # Our committed SRE skills, mounted as a subpath of the default skills root so they
+      # hot-reload without a rebuild and sit alongside anything the Hub installs at runtime.
+      - ./skills/sre:/opt/data/skills/sre
+      # Obsidian vault: runbook notes + RAG source.
+      - ./obsidian:/opt/data/obsidian
+      # Read-only cluster credential (see kubeconfig/README and research.md R2). Deliberately
+      # mounted OUTSIDE /opt/data (a sibling path, not nested under it) — a file-level bind
+      # mount nested inside the ./data:/opt/data directory mount breaks on Docker Desktop's
+      # virtiofs ("mountpoint is outside of rootfs"), the same issue config.yaml hit.
+      - ${KUBECONFIG_PATH}:/etc/hermes-kubeconfig/config:ro
+      # NOTE: config.yaml is intentionally NOT bind-mounted here — see above; `make up` copies
+      # the repo-root config.yaml into ./data/config.yaml instead.
+    extra_hosts:
+      # Docker Desktop provides this automatically, but pin it explicitly for portability.
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "1.0"

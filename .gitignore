@@ -1,0 +1,22 @@
+# Secrets and local config (Constitution Principle II — never commit secrets)
+.env
+.env.local
+
+# Cluster credentials (Constitution Principle V — least privilege, local only)
+kubeconfig/
+*.kubeconfig
+*.key
+*.crt
+
+# Hermes persistent runtime state (memory, Skills Hub quarantine/audit, uploaded skills)
+data/
+
+# Obsidian runbook vault contents (keep the directory, not the notes)
+obsidian/runbooks/*
+!obsidian/runbooks/.gitkeep
+
+# macOS / editor noise
+.DS_Store
+*.swp
+.vscode/
+.idea/
